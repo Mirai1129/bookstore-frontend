@@ -33,12 +33,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages/templates', 'index.html'));
 });
 
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/templates', 'login.html'));
-});
+app.get('/book', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/templates', 'book.html'));
+})
 
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/templates', 'register.html'));
+app.get('/cart', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/templates', 'cart.html'));
 })
 
 

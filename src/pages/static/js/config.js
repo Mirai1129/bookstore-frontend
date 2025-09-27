@@ -22,7 +22,7 @@ export async function getLiffId() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        url = data.url;
+        url = data.id;
         return url;
     } catch (error) {
         console.error('Error fetching URL:', error);

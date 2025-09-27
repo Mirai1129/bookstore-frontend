@@ -1,81 +1,29 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant-TW">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Book Store</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book store</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link rel="stylesheet" href="../static/css/style.css"/>
 </head>
 <body>
 
-<!-- 導覽區：購物車與我的書籍 -->
-<nav style="margin-bottom: 2rem;">
-    <a href="cart.html">🛒 查看購物車</a> |
-    <a href="index.html">📦 查看我的書籍</a>
-</nav>
+    <div id="loading-screen">
+        <p>Initial Line Liff...</p>
+    </div>
 
-<div>👤 歡迎，<span id="lineName">使用者</span>！</div>
-
-<!-- 搜尋表單 -->
-<h1>📑 書籍搜尋與篩選</h1>
-<div>
-    <form id="filterForm">
-        <div>
-            <label>書名關鍵字</label>
-            <input type="text" id="filterTitle" placeholder="輸入書名...">
+    <div id="main-content">
+        <h1>歡迎使用 LIFF App</h1>
+        <div id="user-profile">
+            <img id="user-picture" src="" alt="User Picture">
+            <p><strong>使用者名稱:</strong> <span id="user-name"></span></p>
+            <p><strong>使用者 ID:</strong> <span id="user-id"></span></p>
+            <p><a href="/book">book</a></p>
+            <p><a href="/cart">cart</a></p>
         </div>
-        <div>
-            <label>作者關鍵字</label>
-            <input type="text" id="filterAuthor" placeholder="輸入作者名...">
-        </div>
-        <div>
-            <label>最低價格</label>
-            <input type="number" id="minPrice" min="0" placeholder="最低價格">
-        </div>
-        <div>
-            <label>最高價格</label>
-            <input type="number" id="maxPrice" min="0" placeholder="最高價格">
-        </div>
-        <div>
-            <label>書況</label>
-            <select id="filterCondition">
-                <option value="">不限</option>
-                <option value="new">全新</option>
-                <option value="used">二手</option>
-            </select>
-        </div>
-        <div>
-            <label>是否已售出</label>
-            <select id="filterSold">
-                <option value="">不限</option>
-                <option value="false">尚未售出</option>
-                <option value="true">已售出</option>
-            </select>
-        </div>
-        <div>
-            <button type="submit">🔍 搜尋</button>
-            <button type="button" onclick="resetFilters()">♻️ 清除條件</button>
-        </div>
-    </form>
-</div>
-
-<!-- 書籍清單 -->
-<h1>📚 書籍清單</h1>
-<table id="booksTable">
-    <thead>
-    <tr>
-        <th>書名</th>
-        <th>作者</th>
-        <th>價格</th>
-        <th>書況</th>
-        <th>已售出</th>
-        <th>圖片</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+        <button onclick="liff.logout()">登出</button>
+    </div>
 
 <script type="module" src="../static/js/index.js"></script>
 </body>
