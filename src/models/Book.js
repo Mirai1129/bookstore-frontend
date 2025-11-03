@@ -16,15 +16,26 @@ const bookSchema = new mongoose.Schema({
     condition: {
         type: String,
         required: true
-    }, // 不加 enum，因為你用的是像 "90%" 這樣的自訂內容
+    }, // 不加 enum，因為你用的是自訂書況
     description: {
         type: String
     },
     seller_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // 參照 User 模型
+        ref: 'User',
         required: true
     },
+    // 圖片欄位
+    front: {
+        type: String
+    },
+    spine: {
+        type: String
+    },
+    back: {
+        type: String
+    },
+    // 原本封面 fallback
     image_url: {
         type: String
     },

@@ -4,13 +4,13 @@ const router = express.Router();
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const User = require("../../models/User");
-// TODO: 實作 login 和 register
 
 // 您的 LINE Channel ID 和 Secret
 const CHANNEL_ID = process.env.CHANNEL_ID;
 // 您的 JWT Secret Key
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// (您的 /login 路由保持不變)
 router.post('/login', async (req, res) => {
     const { lineLiffToken } = req.body;
 
@@ -28,31 +28,15 @@ router.post('/login', async (req, res) => {
         });
 
         const lineProfile = verifyRes.data;
-        // sub 就是 Line User ID
         const lineId = lineProfile.sub;
         const name = lineProfile.name;
-        const email = lineProfile.email; // 注意：需要 LIFF scope 中有 email 權限
+        const email = lineProfile.email; 
 
-        // 在此步驟，我們已確認 Token 有效，且 lineId 是真實的。
-        // 您可以忽略前端傳送的 lineId, name, email，而改用從 LINE 驗證服務取得的資料，這樣更安全。
-
-        // Step 2: 檢查使用者是否存在於您的資料庫
-        // 舉例：使用您的 ORM 或資料庫查詢
-        // const user = await User.findOne({ lineId: lineId });
-        let user = { lineId: lineId, name: name, email: email }; // 假設這是在資料庫中找到或建立的使用者物件
-
-        // TODO: create user in database
-        // if (!user) {
-        //     // 如果使用者不存在，則建立新帳號
-        //     user = await User.create({ lineId, name, email });
-        //     console.log('New user created:', user);
-        // }
+        let user = { lineId: lineId, name: name, email: email }; 
 
         // Step 3: 產生您自己的 JWT
-        // JWT Payload 應該包含使用者在您系統中的識別資訊
         const payload = {
-            userId: user.lineId, // 使用 LINE ID 作為識別
-            // 您也可以加入其他資訊，例如 user.role 等
+            userId: user.lineId, 
         };
 
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
@@ -61,9 +45,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ success: true, token, message: 'Login successful.' });
 
     } catch (error) {
-        // 處理 Token 驗證失敗或其他錯誤
         if (error.response && error.response.status === 400) {
-            // LINE 伺服器回傳 400，通常是 Token 無效或過期
             console.error('LINE token verification failed:', error.response.data);
             return res.status(401).json({ success: false, message: 'Invalid or expired LINE token.' });
         }
@@ -73,8 +55,37 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register', (req, res) => {
-    console.log("");
-})
+// 🔽🔽🔽 [ 🟢 修正 /register 路由 ] 🔽🔽🔽
+router.post('/register', async (req, res) => {
+  try {
+    const { line_userId, username } = req.body; // 從前端接收 line_userId (這OK)
 
-module.exports = router
+    if (!line_userId || !username) {
+      return res.status(400).json({ error: '缺少 line_userId 或 username' });
+    }
+    
+    // 🟢 修正：
+    // 查詢資料庫時，使用 Model 定義的 'lineId'
+    let user = await User.findOne({ lineId: line_userId });
+
+    if (user) {
+      // 找到了，更新名字並回傳
+      user.username = username; // 確保名字是最新
+      await user.save();
+      res.json({ message: '使用者登入成功', user: user });
+    } else {
+      // 找不到，建立新使用者
+      const newUser = new User({
+        lineId: line_userId, // 🟢 修正：儲存到 'lineId' 欄位
+        username: username,
+      });
+      await newUser.save();
+      res.json({ message: '使用者註冊成功', user: newUser });
+    }
+  } catch (err) {
+    console.error('❌ 註冊失敗:', err);
+    res.status(500).json({ error: '伺服器註冊錯誤' });
+  }
+});
+
+module.exports = router;
