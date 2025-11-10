@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Book = require('./src/models/Book'); // ← 改這裡
+const Book = require('./models/Book'); // ← 改這裡
 require('dotenv').config({ path: './.env' });
 
 // 連線到 MongoDB

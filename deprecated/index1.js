@@ -1,4 +1,4 @@
-import { getWebUrl } from './config.js';
+import { getWebUrl } from '../src/pages/static/js/config.js';
 
 // import {liff} from '@line/liff';
 

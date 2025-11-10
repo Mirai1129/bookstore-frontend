@@ -3,7 +3,7 @@ const router = express.Router();
 
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
-const User = require("../../models/User");
+const User = require("./models/User");
 
 // 您的 LINE Channel ID 和 Secret
 const CHANNEL_ID = process.env.CHANNEL_ID;

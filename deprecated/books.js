@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Book = require('../../models/Book');
-const User = require('../../models/User');
+const Book = require('./models/Book');
+const User = require('./models/User');
 
 // 取得所有書籍 (不變)
 router.get('/', async (req, res) => {

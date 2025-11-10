@@ -1,10 +1,9 @@
-require('dotenv').config({path: '../.env'});
-
-// imports
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 // initial app
 const app = express();
@@ -15,10 +14,10 @@ app.use(express.static('pages'));
 
 
 // Routes settings
-const apiRoutes = require('./routes/api');
-const apiAuthRoutes = require('./routes/api/auth');
-const apiBooksRoutes = require('./routes/api/books');
-const apiCartRoutes = require('./routes/api/cart');
+const apiRoutes = require('../src/routes/api/indexRoutes');
+const apiAuthRoutes = require('./auth');
+const apiBooksRoutes = require('./books');
+const apiCartRoutes = require('./cart');
 
 
 app.use('/api', apiRoutes);
