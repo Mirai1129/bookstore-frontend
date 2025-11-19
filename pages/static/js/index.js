@@ -150,20 +150,25 @@ function renderIndexBooks(filter = "") {
 }
 
 async function main() {
-    const liffIdString = await getLiffId();
-    await liff.init({liffId: liffIdString, withLoginOnExternalBrowser: false})
-        .then(async () => {
-            if (liff.isLoggedIn()) {
-                await initIndexLiffApp();
-            } else {
-                liff.login();
-            }
-        })
-        .catch(error => {
-            console.error("❌ LIFF 初始化錯誤:", error);
-            const loadingScreen = document.getElementById("loading-screen");
-            if (loadingScreen) loadingScreen.innerText = "LIFF 初始化失敗，請稍後再試。";
+    try {
+        const liffIdString = await getLiffId();
+
+        await liff.init({
+            liffId: liffIdString,
+            withLoginOnExternalBrowser: false
         });
+
+        if (liff.isLoggedIn()) {
+            await initIndexLiffApp();
+        } else {
+            liff.login();
+        }
+
+    } catch (error) {
+        console.error("❌ LIFF 初始化錯誤:", error);
+        const loadingScreen = document.getElementById("loading-screen");
+        if (loadingScreen) loadingScreen.innerText = "LIFF 初始化失敗，請稍後再試。";
+    }
 }
 
 main();
