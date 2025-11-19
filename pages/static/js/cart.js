@@ -1,96 +1,75 @@
-// import { liff } from "@line/liff";
-import { getLiffId, getWebUrl } from "./config.js";
+import {getLiffId, getWebUrl, API_ENDPOINTS} from "./config.js";
 
-// 假資料示範（測試用）
-const SAMPLE_BOOKS = [
-    { _id: "b001", title: "書名A", author: "作者A", price: 250, image: "book1.jpg" },
-    { _id: "b002", title: "書名B", author: "作者B", price: 320, image: "book2.jpg" },
-    { _id: "b003", title: "書名C", author: "作者C", price: 180, image: "book3.jpg" }
-];
+async function main() {
+    const liffId = await getLiffId();
+    const webUrl = await getWebUrl();
 
-const SAMPLE_CART = [
-    { id: "b001", qty: 1 },
-    { id: "b002", qty: 2 }
-];
+    await liff.init({liffId: liffId, withLoginOnExternalBrowser: false});
 
-function findBookById(id) {
-    return SAMPLE_BOOKS.find(b => b._id === id);
-}
-
-const liffIdString = await getLiffId();
-const liffWebUrl = await getWebUrl();
-
-// ---------- 購物車頁面渲染 ----------
-function renderCart() {
-    const container = document.getElementById('cartItems');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    if (SAMPLE_CART.length === 0) {
-        container.innerHTML = '<p>購物車是空的。</p>';
+    if (!liff.isLoggedIn()) {
+        liff.login({redirectUri: `${webUrl}/cart`});
         return;
     }
 
-    let total = 0;
+    const profile = await liff.getProfile();
+    document.getElementById("user-picture").src = profile.pictureUrl;
+    document.getElementById("user-name").innerText = profile.displayName;
 
-    SAMPLE_CART.forEach(item => {
-        const book = findBookById(item.id);
-        if (!book) return;
-
-        const sub = book.price * item.qty;
-        total += sub;
-
-        const div = document.createElement('div');
-        div.className = 'book';
-        // 橫向排列卡片
-        div.innerHTML = `
-            <div style="display:flex; gap:12px; align-items:center;">
-                <img src="${book.image}" alt="${book.title} 封面" style="width:90px; height:120px; object-fit:cover; border-radius:6px;">
-                <div style="flex:1;">
-                    <h4 style="margin:0">${book.title}</h4>
-                    <p style="margin:6px 0 0 0;"><small>作者：${book.author}</small></p>
-                    <p style="margin:6px 0 0 0;"><small>單價：NT$ ${book.price} × ${item.qty} = NT$ ${sub}</small></p>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-
-    // 顯示小計（簡單文字）
-    const subtotal = document.createElement('div');
-    subtotal.style.marginTop = '12px';
-    subtotal.style.fontWeight = '600';
-    subtotal.innerHTML = `總計：NT$ ${total}`;
-    container.appendChild(subtotal);
+    await loadCart();
 }
 
-// ---------- 初始化 LIFF ----------
-async function initCartLiffApp() {
-    try {
-        const profile = await liff.getProfile();
-        document.getElementById("user-picture").src = profile.pictureUrl;
-        document.getElementById("user-name").innerText = profile.displayName;
-        document.getElementById("user-id").innerText = profile.userId;
-    } catch (err) {
-        console.error("取得使用者資料失敗:", err);
-    }
-}
+async function loadCart() {
+    const container = document.getElementById('cartItems');
+    container.innerHTML = '載入中...';
 
-// ---------- 主程式 ----------
-async function main() {
     try {
-        await liff.init({ liffId: liffIdString, withLoginOnExternalBrowser: false });
-        if (!liff.isLoggedIn()) {
-            liff.login({ redirectUri: `${liffWebUrl}/cart` });
-        } else {
-            await initCartLiffApp();
-            renderCart(); // 渲染購物車
+        const res = await fetch(API_ENDPOINTS.myCart);
+        if (!res.ok) throw new Error("無法取得購物車");
+
+        const cartData = await res.json();
+        const items = cartData.items || [];
+
+        if (items.length === 0) {
+            container.innerHTML = '<p>購物車是空的。</p>';
+            return;
         }
+
+        container.innerHTML = '';
+        let total = 0;
+
+        for (const item of items) {
+            const bookRes = await fetch(API_ENDPOINTS.bookById(item.book_id));
+
+            if (bookRes.ok) {
+                const book = await bookRes.json();
+                const subtotal = book.price * item.quantity;
+                total += subtotal;
+
+                const div = document.createElement('div');
+                div.className = 'book';
+                div.innerHTML = `
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <img src="${book.image_url || 'static/images/default_book.png'}" style="width:80px; height:100px; object-fit:cover;">
+                        <div>
+                            <h4>${book.title}</h4>
+                            <p>單價：$${book.price} x ${item.quantity}</p>
+                            <p>小計：$${subtotal}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        const totalDiv = document.createElement('div');
+        totalDiv.style.marginTop = '20px';
+        totalDiv.style.textAlign = 'right';
+        totalDiv.innerHTML = `<h3>總金額：$${total}</h3>`;
+        container.appendChild(totalDiv);
+
     } catch (err) {
-        console.error("LIFF 初始化失敗:", err);
-        const container = document.getElementById('cartItems');
-        if (container) container.innerText = "LIFF 初始化失敗，請稍後再試。";
+        console.error(err);
+        container.innerHTML = '載入失敗';
     }
 }
 
