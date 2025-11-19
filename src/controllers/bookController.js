@@ -6,7 +6,6 @@ const apiClient = require('../services/coreApiClient');
 const handleApiError = (res, error, operation) => {
     console.error(`BFF Error: Failed to ${operation}:`, error.message);
     if (error.response) {
-        // 額外印出 FastAPI 的驗證錯誤（例如 422）
         if (error.response.data) {
             console.error(`FastAPI Error Detail:`, error.response.data);
         }
@@ -111,7 +110,6 @@ const deleteBook = async (req, res) => {
 };
 
 
-// 處理 POST /api/predict (BFF 接收 Form Data 後，轉發給 Core API)
 const predictCondition = async (req, res) => {
     try {
         const sellerId = req.session.userId;
@@ -121,15 +119,12 @@ const predictCondition = async (req, res) => {
 
         const formDataToCore = new FormData();
 
-        // 轉發文字欄位
         for (const key in req.body) {
             formDataToCore.append(key, req.body[key]);
         }
 
-        // 轉發檔案 (假設 multer 將檔案存在 req.files 中)
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
-                // 使用 file.buffer 傳遞檔案內容
                 formDataToCore.append(file.fieldname, file.buffer, {
                     filename: file.originalname,
                     contentType: file.mimetype
@@ -137,7 +132,6 @@ const predictCondition = async (req, res) => {
             }
         }
 
-        // 呼叫 Core API
         const response = await apiClient.post('/predict', formDataToCore, {
             headers: {
                 ...formDataToCore.getHeaders(),
@@ -159,5 +153,5 @@ module.exports = {
     getBookById,
     updateBook,
     deleteBook,
-    predictCondition // <-- 新增
+    predictCondition
 };

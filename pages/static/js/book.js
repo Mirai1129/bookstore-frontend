@@ -1,13 +1,7 @@
-// 檔案： static/js/book.js (最終修正版 v4.2)
 // import liff from "/@line/liff";
-import { getLiffId, getWebUrl, API_ENDPOINTS } from "./config.js";
-
-// ⚠️ 移除 AI_SERVER_URL 的宣告，我們將呼叫 BFF 的 /api/predict 路由
+import {getLiffId, getWebUrl, API_ENDPOINTS} from "./config.js";
 
 
-/**
- * 步驟 1: (重用) 標準的用戶同步函式
- */
 async function syncUserProfile(profile) {
     try {
         await fetch(API_ENDPOINTS.syncProfile, {
@@ -22,8 +16,6 @@ async function syncUserProfile(profile) {
         return true;
     } catch (err) {
         console.error("❌ 用戶資料同步失敗:", err);
-        // 這裡的 err.response 可能是 undefined，因為前端 fetch 不會自動像 Axios 一樣附帶 response
-        // 但我們保留偵錯資訊
         if (err.response && err.response.data) {
             console.error('FastAPI Validation Error:', err.response.data);
         }
@@ -32,9 +24,6 @@ async function syncUserProfile(profile) {
     }
 }
 
-/**
- * 步驟 2: 初始化 LIFF
- */
 async function initBookLiffApp() {
     const profile = await liff.getProfile();
     // 更新 UI
@@ -45,9 +34,6 @@ async function initBookLiffApp() {
     return await syncUserProfile(profile);
 }
 
-/**
- * 步驟 3: 載入書籍清單
- */
 async function loadBooks() {
     const container = document.getElementById('myBooksList');
     if (!container) return;
@@ -66,7 +52,9 @@ async function loadBooks() {
             return;
         }
         books.forEach((b) => {
-            if (!b || !b._id) { return; }
+            if (!b || !b._id) {
+                return;
+            }
             const el = document.createElement('div');
             el.className = 'book';
             el.innerHTML = `
@@ -90,17 +78,12 @@ async function loadBooks() {
     }
 }
 
-/**
- * 步驟 4: CRUD (增刪查改) 函式
- */
-
-// (刪除)
 async function deleteBook(id) {
     if (!id) return alert("刪除時發生錯誤");
     if (!confirm('您確定要刪除這本書嗎？此動作無法復原。')) return;
 
     try {
-        const res = await fetch(API_ENDPOINTS.bookById(id), { method: 'DELETE' });
+        const res = await fetch(API_ENDPOINTS.bookById(id), {method: 'DELETE'});
         if (res.ok) {
             alert('書籍刪除成功！');
             loadBooks();
@@ -114,7 +97,6 @@ async function deleteBook(id) {
     }
 }
 
-// (開啟編輯)
 async function openEditModal(id) {
     if (!id) return alert("開啟編輯時發生錯誤");
 
@@ -138,16 +120,10 @@ async function openEditModal(id) {
 }
 
 
-/**
- * 步驟 5: 綁定所有事件
- */
 function bindAllEventListeners() {
-
-    // --- 1. 綁定「上傳」按鈕 (上架書籍) ---
     const uploadBtn = document.getElementById("uploadBtn");
     if (uploadBtn) {
         uploadBtn.addEventListener("click", async () => {
-            // 讀取表單
             const title = document.getElementById("bookTitle").value.trim();
             const author = document.getElementById("bookAuthor").value.trim();
             const priceStr = document.getElementById("bookPrice").value.trim();
@@ -158,7 +134,6 @@ function bindAllEventListeners() {
             const userId = document.getElementById("user-id").innerText;
             const resultDiv = document.getElementById("result");
 
-            // 驗證
             if (!title || !author || !priceStr) return alert("請填寫書籍資料！");
             if (isNaN(price) || price <= 0) return alert("價格請輸入正確數字！");
             if (!front && !spine && !back) return alert("請至少上架一張圖片！");
@@ -176,18 +151,15 @@ function bindAllEventListeners() {
             if (resultDiv) resultDiv.innerHTML = "📊 AI 分析中...";
 
             try {
-                // [ ⬇️ ⬇️ ⬇️ 最終修正：呼叫 BFF 的 /api/predict ⬇️ ⬇️ ⬇️ ]
-                const aiRes = await fetch(API_ENDPOINTS.predict, { // 🌟 呼叫 BFF
+                const aiRes = await fetch(API_ENDPOINTS.predict, {
                     method: "POST",
                     body: formData
                 });
 
                 if (!aiRes.ok) {
                     const errorText = await aiRes.text();
-                    // 這裡的錯誤來自 BFF (5000)，它可能是 404/422/500
                     throw new Error(`AI 預測服務錯誤 (${aiRes.status}): ${errorText.substring(0, 100)}`);
                 }
-                // [ ⬆️ ⬆️ ⬆️ 最終修正：呼叫 BFF 的 /api/predict ⬆️ ⬆️ ⬆️ ]
 
                 const aiData = await aiRes.json();
                 if (aiData.error) {
@@ -197,7 +169,6 @@ function bindAllEventListeners() {
                 const condition = aiData.condition || aiData.desc || "無法辨識";
                 const imageUrlFromAI = aiData.image_url || 'static/images/default_book.png';
 
-                // 準備存到主資料庫的資料
                 const bookData = {
                     title: title,
                     author: author,
@@ -207,7 +178,6 @@ function bindAllEventListeners() {
                     image_url: imageUrlFromAI
                 };
 
-                // 呼叫 BFF 儲存 (POST /api/books)
                 const saveRes = await fetch(API_ENDPOINTS.books, {
                     method: "POST",
                     headers: {'Content-Type': 'application/json'},
@@ -231,9 +201,8 @@ function bindAllEventListeners() {
                 alert(`發生錯誤: ${err.message}`);
             }
         });
-    } // (if uploadBtn)
+    }
 
-    // --- 2. 綁定「儲存編輯」按鈕 ---
     const saveEditBtn = document.getElementById('saveEditBtn');
     if (saveEditBtn) {
         saveEditBtn.addEventListener('click', async () => {
@@ -247,7 +216,6 @@ function bindAllEventListeners() {
             if (!id) return alert('錯誤：找不到書籍 ID');
 
             try {
-                // 呼叫 PATCH /api/books/:id
                 const res = await fetch(API_ENDPOINTS.bookById(id), {
                     method: 'PATCH',
                     headers: {'Content-Type': 'application/json'},
@@ -267,9 +235,8 @@ function bindAllEventListeners() {
                 alert(`更新時發生錯誤: ${err.message}`);
             }
         });
-    } // (if saveEditBtn)
+    }
 
-    // --- 3. 綁定「列表容器」(事件委派 刪除/編輯) ---
     const myBooksListContainer = document.getElementById('myBooksList');
     if (myBooksListContainer) {
         myBooksListContainer.addEventListener('click', (event) => {
@@ -284,13 +251,10 @@ function bindAllEventListeners() {
                 return;
             }
         });
-    } // (if myBooksListContainer)
+    }
 }
 
 
-/**
- * 步驟 6: 初始化 LIFF (主函式)
- */
 async function main() {
     try {
         const liffIdString = await getLiffId();
@@ -318,5 +282,4 @@ async function main() {
     }
 }
 
-// 執行
 main();
