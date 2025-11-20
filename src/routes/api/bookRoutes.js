@@ -7,15 +7,12 @@ const multer = require('multer');
 const bookController = require('../../controllers/bookController');
 const upload = multer()
 
-router.get('/books', bookController.getAllBooks);
-
-router.get('/books/me', bookController.getMyBooks);
-
-router.post('/books', bookController.createBook);
-
+router.get('/', bookController.getAllBooks);
+router.post('/', bookController.createBook);
+router.get('/me', bookController.getMyBooks);
 router.post('/predict', upload.any(), bookController.predictCondition)
 
-router.route('/books/:id')
+router.route('/:id')
     .get(bookController.getBookById)
     .patch(bookController.updateBook)
     .delete(bookController.deleteBook);

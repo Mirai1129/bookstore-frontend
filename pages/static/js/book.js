@@ -122,60 +122,75 @@ async function openEditModal(id) {
 
 function bindAllEventListeners() {
     const uploadBtn = document.getElementById("uploadBtn");
+
     if (uploadBtn) {
         uploadBtn.addEventListener("click", async () => {
+            // 1. 收集表單資料
             const title = document.getElementById("bookTitle").value.trim();
             const author = document.getElementById("bookAuthor").value.trim();
             const priceStr = document.getElementById("bookPrice").value.trim();
             const price = Number(priceStr);
-            const front = document.getElementById("bookFrontInput").files[0];
-            const spine = document.getElementById("bookSpineInput").files[0];
-            const back = document.getElementById("bookBackInput").files[0];
+
+            // 2. 收集圖片檔案
+            const frontFile = document.getElementById("bookFrontInput").files[0];
+            const spineFile = document.getElementById("bookSpineInput").files[0];
+            const backFile = document.getElementById("bookBackInput").files[0];
+
             const userId = document.getElementById("user-id").innerText;
             const resultDiv = document.getElementById("result");
 
+            // 3. 驗證
             if (!title || !author || !priceStr) return alert("請填寫書籍資料！");
             if (isNaN(price) || price <= 0) return alert("價格請輸入正確數字！");
-            if (!front && !spine && !back) return alert("請至少上架一張圖片！");
-            if (!userId) return alert("無法取得使用者資訊！");
 
-            const formData = new FormData();
-            formData.append("title", title);
-            formData.append("author", author);
-            formData.append("price", price);
-            formData.append("seller_id", userId);
-            if (front) formData.append("front", front);
-            if (spine) formData.append("spine", spine);
-            if (back) formData.append("back", back);
+            // [修改] 強制要求三張圖片 (配合後端 API 需求)
+            if (!frontFile || !spineFile || !backFile) {
+                return alert("請完整上傳三張圖片 (封面、書背、封底)！");
+            }
 
-            if (resultDiv) resultDiv.innerHTML = "📊 AI 分析中...";
+            if (!userId) return alert("無法取得使用者資訊，請重新整理頁面！");
+
+            // 顯示載入中狀態
+            if (resultDiv) resultDiv.innerHTML = "☁️ 正在上傳圖片並建立書籍...";
+            uploadBtn.disabled = true; // 避免重複點擊
 
             try {
-                const aiRes = await fetch(API_ENDPOINTS.predict, {
+                // -------------------------------------------------------
+                // 步驟 A: 上傳圖片 (呼叫 BFF /api/upload/images)
+                // -------------------------------------------------------
+                const uploadFormData = new FormData();
+                // 欄位名稱必須對應後端 (front, spine, back)
+                uploadFormData.append("front", frontFile);
+                uploadFormData.append("spine", spineFile);
+                uploadFormData.append("back", backFile);
+                // user_id 由 BFF 的 Session 自動補上，這裡不用傳
+
+                const uploadRes = await fetch(API_ENDPOINTS.upload, {
                     method: "POST",
-                    body: formData
+                    body: uploadFormData
                 });
 
-                if (!aiRes.ok) {
-                    const errorText = await aiRes.text();
-                    throw new Error(`AI 預測服務錯誤 (${aiRes.status}): ${errorText.substring(0, 100)}`);
+                if (!uploadRes.ok) {
+                    const errText = await uploadRes.text();
+                    throw new Error(`圖片上傳失敗 (${uploadRes.status}): ${errText}`);
                 }
 
-                const aiData = await aiRes.json();
-                if (aiData.error) {
-                    throw new Error(`AI 分析失敗：${aiData.error}`);
-                }
+                // 取得回傳的 Cloudinary URLs
+                // 格式: { front: "https://...", spine: "https://...", back: "https://..." }
+                const urls = await uploadRes.json();
+                console.log("圖片上傳成功:", urls);
 
-                const condition = aiData.condition || aiData.desc || "無法辨識";
-                const imageUrlFromAI = aiData.image_url || 'static/images/default_book.png';
-
+                // -------------------------------------------------------
+                // 步驟 B: 建立書籍 (呼叫 BFF /api/books)
+                // -------------------------------------------------------
                 const bookData = {
                     title: title,
                     author: author,
                     price: price,
                     seller_id: userId,
-                    condition: condition,
-                    image_url: imageUrlFromAI
+                    condition: "良好", // 暫時寫死，或者您可以保留原本的 AI 預測邏輯
+                    image_url: urls.front // 🌟 使用上傳後的「封面圖」當作主圖
+                    // 如果您的 DB 支援存多張圖，可以擴充欄位傳送 urls.spine 和 urls.back
                 };
 
                 const saveRes = await fetch(API_ENDPOINTS.books, {
@@ -186,23 +201,33 @@ function bindAllEventListeners() {
 
                 if (saveRes.ok) {
                     alert("書籍上架成功！");
-                    loadBooks();
+                    await loadBooks(); // 重新整理列表
+
+                    // 關閉視窗並清空表單
                     document.getElementById('modalOverlay').style.display = 'none';
                     document.getElementById("bookTitle").value = "";
                     document.getElementById("bookAuthor").value = "";
                     document.getElementById("bookPrice").value = "";
+                    document.getElementById("bookFrontInput").value = "";
+                    document.getElementById("bookSpineInput").value = "";
+                    document.getElementById("bookBackInput").value = "";
+                    if (resultDiv) resultDiv.innerHTML = "";
                 } else {
                     const errData = await saveRes.json();
                     throw new Error(`上架失敗： ${errData.error || saveRes.statusText}`);
                 }
+
             } catch (err) {
-                console.error("❌ AI預測或上架失敗：", err);
+                console.error("❌ 上架流程失敗：", err);
                 if (resultDiv) resultDiv.innerHTML = `<p style='color:red;'>錯誤: ${err.message}</p>`;
                 alert(`發生錯誤: ${err.message}`);
+            } finally {
+                uploadBtn.disabled = false; // 恢復按鈕
             }
         });
     }
 
+    // --- 編輯與刪除按鈕的事件綁定 (保持不變) ---
     const saveEditBtn = document.getElementById('saveEditBtn');
     if (saveEditBtn) {
         saveEditBtn.addEventListener('click', async () => {

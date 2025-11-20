@@ -41,10 +41,13 @@ export const API_ENDPOINTS = {
     // Books
     books: `${API_BASE_URL}/books`,
     myBooks: `${API_BASE_URL}/books/me`,
-    predict: `${API_BASE_URL}/predict`,
+    predict: `${API_BASE_URL}/books/predict`,
     bookById: (id) => `${API_BASE_URL}/books/${id}`,
 
     // Carts
     addToCart: `${API_BASE_URL}/cart/items`,
-    myCart: `${API_BASE_URL}/cart`
+    myCart: `${API_BASE_URL}/cart`,
+
+    // Upload
+    upload: `${API_BASE_URL}/upload/images`
 };
