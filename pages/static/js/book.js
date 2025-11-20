@@ -187,6 +187,7 @@ function bindAllEventListeners() {
 
                 const predictData = await predictRes.json();
                 const aiCondition = predictData.condition || predictData.desc || "無法辨識";
+                console.log(aiCondition)
                 console.log("✅ AI 預測完成:", aiCondition);
 
                 document.getElementById("bookCondition").innerText = aiCondition;

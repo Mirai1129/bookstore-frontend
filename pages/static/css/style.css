@@ -1,14 +1,16 @@
 /* ===========================================
-    共用樣式（溫暖米色系） - 帶按鈕動畫與簡潔排版
-   =========================================== */
+   共用樣式（溫暖米色系） - 帶按鈕動畫與簡潔排版
+=========================================== */
 
-/* 🌄 全站背景設定（所有頁面都會套用） */
-
+/* 🌄 全站背景設定 */
 body {
     position: relative;
     min-height: 100vh;
     margin: 0;
-    font-family: sans-serif;
+    font-family: 'Microsoft JhengHei', sans-serif;
+    background: var(--bg);
+    color: #333;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ✅ 背景圖片 + 可調透明度 */
@@ -18,55 +20,49 @@ body::before {
     inset: 0;
     background: url("book.jpg") no-repeat center center fixed;
     background-size: cover;
-    opacity: 0.4; /* ← 調整透明度：0.1 ~ 1 */
-    z-index: -1; /* 保證背景在最底層 */
+    opacity: 0.4;
+    z-index: -1;
 }
+
 /* --- 全域設定 --- */
 :root{
-    --bg: #f6efe6;       /* 背景淺米色 */
-    --card: #ffffff;     /* 卡片白 */
-    --accent: #b0783f;   /* 主要配色（咖啡色） */
+    --bg: #f6efe6;
+    --card: #ffffff;
+    --accent: #628545;
     --accent-dark: #9b5d2f;
-    --muted: #6b5a4a;    /* 次要文字色 */
+    --muted: #6b5a4a;
 }
 
 /* 📚 新增 intro-section，圖片＋文字全置中 */
 .intro-section {
-  text-align: center;       /* ⭐ 讓內容置中 */
-  margin-top: 20px;         /* 與上方標題保持距離 */
+    text-align: center;
+    margin-top: 120px;
 }
-
-/* 📷 控制圖片大小與間距 */
 .intro-image img {
-    width: 300px;             /* ⭐ 調整大小像 logo 一樣 */
+    width: 220px;
     height: auto;
-    display: inline-block;
-    margin-bottom: 10px;      /* ⭐ 圖片與文字的距離 */
+    margin-bottom: 10px;
 }
-/* 使用者頭像 */
-#user-picture {
-    width: 80px;           /* 調整寬度 */
-    height: 80px;          /* 調整高度 */
-    border-radius: 50%;    /* 圓形 */
-    object-fit: cover;     /* 保持比例不變形 */
+.intro-text {
+    font-size: 1.3rem;
+    color: #555;
+    font-weight: 500;
 }
 
-/* ✏️ 副標題文字樣式（可自訂） */
-.intro-text {
-    font-size: 1.2rem;
-    color: #714949;
-    font-weight: 500;
-    margin: 0;
-}
 /* 🧭 導覽列外層 */
 .nav {
     width: 100%;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    position: fixed;   /* ⭐ 固定在畫面頂端 */
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,250,245,0.95));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2vw;
+    height: 16vh;
 }
 
 /* 📦 導覽列容器 */
@@ -79,33 +75,27 @@ body::before {
     justify-content: space-between;
 }
 
-/* 📘 左側品牌 */
+/* 📘 品牌 LOGO 與名稱 */
 .brand {
     display: flex;
     align-items: center;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.2rem;
 }
-
 .brand-logo {
-    width: 50px;              /* ⭐ 調整 logo 大小 */
+    width: 50px;
     height: auto;
     margin-right: 10px;
-    border-radius: 50%;       /* ⭐ 圓形效果（可拿掉） */
+    border-radius: 50%;
 }
-
 .brand-name {
     font-size: 1.5rem;
     font-weight: bold;
     color: #333;
 }
 
-/* 假設 nav 高度約 70px，留點空間給陰影 */
-body#page-mybooks {
-    padding-top: min(80px);
-}
-body#page-cart {
-    padding-top: 0px; /* ⭐ 導覽列高度 + 預留空間 */
-}
-/* 📚 導覽連結 */
+/* 導覽連結 */
 .nav-links a {
     text-decoration: none;
     color: #333;
@@ -113,71 +103,30 @@ body#page-cart {
     font-size: 1.1rem;
     transition: color 0.3s;
 }
-
 .nav-links a:hover {
     color: #8e564e;
 }
 
-/* 📱 響應式調整 */
-@media (max-width: 768px) {
-    .nav-container {
-    flex-direction: column;
-    text-align: center;
-    }
-    .nav-links a {
-    display: block;
-    margin: 10px 0;
-    }
+/* 導覽右側使用者資訊與按鈕 */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 40px; /* 往左一點 */
 }
-
-/* 📷 圖片 + 副標題區塊 */
-.intro-section {
-    text-align: center;
-    margin-top: 120px; /* ⭐ 預留空間，避免被導覽列蓋住 */
-}
-
-.intro-image img {
-    width: 220px;   /* ⭐ 圖片變大 */
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.intro-text {
-    font-size: 1.3rem;
-    color: #555;
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-weight: 500;
+    color: #474747;
 }
-
-
-/* 基本字型、背景 */
-body {
-    font-family: 'Microsoft JhengHei', sans-serif;
-    margin: 0;
-    background: var(--bg);
-    color: #333;
-    -webkit-font-smoothing:antialiased;
+.nav-user #user-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
 }
-
-/* 導覽列 */
-.nav {
-    display: flex;                 /* 水平排列 */
-    justify-content: space-between;/* 左右排開 */
-    align-items: center;           /* 垂直置中 */
-    height: 16vh;  /* 導覽列高度 = 畫面高度的 16% */
-    padding: 0 2vw; /* 左右內距用寬度百分比 */
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,250,245,0.95));
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-/* 品牌字樣 */
-.nav .brand {
-    font-weight: 700;
-    color: var(--accent);
-    font-size: 1.2rem;
-}
-
-
-/* 導覽按鈕樣式 */
 .nav button {
     margin-left: 8px;
     padding: 8px 14px;
@@ -189,15 +138,13 @@ body {
     font-size: 0.95rem;
     transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
-
-/* 按鈕 hover 動畫：放大 + 陰影 + 變深色 */
 .nav button:hover {
     background: var(--accent-dark);
     transform: scale(1.05);
     box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
 
-/* 主要容器（讓頁面置中） */
+/* 主要容器 */
 .container {
     max-width: 1000px;
     margin: 28px auto;
@@ -235,16 +182,17 @@ body {
     cursor: pointer;
     transition: transform 0.25s ease, background 0.25s ease;
 }
-.search button:hover { background: var(--accent-dark); transform: scale(1.03); }
-
-/* 書籍列表（格狀） */
-.book-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 自動換列 */
-    gap: 16px;
+.search button:hover {
+    background: var(--accent-dark);
+    transform: scale(1.03);
 }
 
-/* 單本書樣式（卡片） */
+/* 書籍列表 */
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
 .book {
     background: var(--card);
     padding: 12px;
@@ -255,34 +203,26 @@ body {
     flex-direction: column;
 }
 .book:hover {
-    transform: translateY(-6px); /* 懸浮效果 */
+    transform: translateY(-6px);
     box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
-
-/* 書封面圖片 */
 .book img {
     width: 100%;
     height: 220px;
-    object-fit: cover; /* 保持比例切割 */
+    object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
-    background: #eee; /* 若無圖顯示灰底 */
+    background: #eee;
 }
-
-/* 書名、作者、價格 */
 .book h4 { margin: 0 0 6px 0; font-size: 1rem; }
 .book p { margin: 0 0 8px 0; color: var(--muted); font-size: 0.9rem; }
-
-/* 卡片底部排版：價格與按鈕 */
 .book .row {
-    margin-top: auto; /* 推到卡片底部保持一致高度 */
+    margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    }
-
-/* 加入購物車按鈕風格（示意） */
+}
 .btn-add {
     padding: 8px 10px;
     border-radius: 8px;
@@ -292,7 +232,10 @@ body {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.btn-add:hover { transform: scale(1.05); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+.btn-add:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
 
 /* 我的書籍上方操作按鈕 */
 .actions {
@@ -300,6 +243,7 @@ body {
     gap: 10px;
     margin-bottom: 12px;
     flex-wrap: wrap;
+    margin-top: 20px;
 }
 .actions button {
     padding: 10px 16px;
@@ -312,7 +256,7 @@ body {
 }
 .actions button:hover { transform: scale(1.03); }
 
-/* 購物車底部按鈕排版 */
+/* 購物車底部按鈕 */
 .cart-footer {
     display:flex;
     justify-content:flex-end;
@@ -330,10 +274,10 @@ body {
 }
 .cart-footer button:hover { transform: scale(1.03); }
 
-/* 首頁歡迎遮罩（全螢幕） */
+/* 首頁歡迎遮罩 */
 .overlay {
     position: fixed;
-    inset: 0; /* top/right/bottom/left = 0 */
+    inset: 0;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -341,7 +285,7 @@ body {
     z-index: 1000;
 }
 .welcomeBox {
-    background: rgba(0, 0, 0, 0.6); /* 0.8 = 80% 不透明度 */
+    background: rgba(0, 0, 0, 0.6);
     color: #fff;
     padding: 18px;
     border-radius: 12px;
@@ -350,96 +294,77 @@ body {
     font-size: 0.95rem;
 }
 
-
-/* 手機響應（簡單調整） */
-@media (max-width: 600px) {
-    .book img { height: 160px; }
-    .nav .brand { font-size: 1rem; }
-    .nav button { padding: 8px 10px; font-size: 0.9rem; }
-}
-
-/* 導覽列右側整個區塊 */
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;        /* 使用者頭像與名稱間距 + 按鈕間距 */
-    margin-right: 20px; /* 整個右側區塊往左移 10px */
-}
-
-/* 導覽列右側使用者資訊 */
-.nav-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;       /* 頭像與名稱間距 */
-    font-weight: 500;
-    color: var(--accent);
-}
-
-/* 使用者頭像大小 */
-.nav-user #user-picture {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* 主體容器距離 header */
-.container {
-    margin-top: 25px; /* 讓主體離 header 有一點距離 */
-}
-
-/* 上方操作按鈕 */
-.actions {
-    margin-top: 20px; /* 讓按鈕區塊離標題有間距 */
-}
-
-.actions button {
-    margin-right: 10px; /* 按鈕之間留空 */
-}
-
-@media (max-width: 600px) {
-    /* 導覽列改成兩行 */
-    .nav {
+/* 電腦板響應式（保留） */
+@media (max-width: 768px) {
+    .nav-container {
         flex-direction: column;
-        align-items: stretch; /* 兩行撐滿寬度 */
-        padding: 6px 10px;
-        height: auto; /* 自動高度 */
+        text-align: center;
+    }
+    .nav-links a {
+        display: block;
+        margin: 10px 0;
+    }
+}
+
+
+/* ===== 手機版（≤600px） ===== */
+@media (max-width: 600px) {
+
+    /* 導覽列整體 */
+    .nav {
+        flex-direction: row;
+        justify-content: flex-start;  /* 從左排列 */
+        align-items: center;
+        padding: 6px 0px;  /* 左右縮小 padding，防止偏右 */
+        height: auto;
+        gap: 4px;  /* 品牌 + 使用者 + 連結間距 */
     }
 
-    /* 品牌 LOGO 與名稱 */
-    .nav .brand {
-        justify-content: center;
-        margin-bottom: 6px;
+    /* 品牌 LOGO + 名稱 */
+    .brand {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        margin: 0;  /* 不留右邊距 */
     }
-    .nav .brand-logo {
+    .brand-logo {
         width: 35px;
         height: auto;
-        margin-right: 6px;
+        margin-right: 4px;
     }
-    .nav .brand-name {
+    .brand-name {
         font-size: 1rem;
+        font-weight: bold;
+        color: #333;
     }
 
-    /* 導覽連結區 */
+    /* 導覽連結 */
     .nav-links {
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap; /* 換行 */
-        gap: 8px;
-        margin-bottom: 6px;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;  /* 不撐滿 */
     }
     .nav-links a {
         font-size: 0.85rem;
-        margin: 0; /* 改用 gap 控制間距 */
+        margin: 0;
     }
 
-    /* 右側按鈕與使用者資訊 */
+    /* 使用者資訊 + 登出按鈕 */
     .nav-right {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        flex: 0 0 auto;  /* 不撐滿、不換行 */
+        margin-left: 0;  /* 緊貼品牌 */
         margin-right: 0;
-        margin-bottom: 6px;
+    }
+    .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
     }
     .nav-user #user-picture {
         width: 30px;
@@ -448,17 +373,32 @@ body {
     .nav-user span {
         font-size: 0.8rem;
     }
+
+    /* 登出按鈕 */
     .nav button {
         font-size: 0.8rem;
-        padding: 4px 8px;
+        padding: 6px 7px;
+        flex-shrink: 0;  /* 防止換行 */
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+    .nav button:hover {
+        background: var(--accent-dark);
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
 
-    /* 搜尋區 */
+    /* 搜尋區按鈕與輸入欄置中且同寬 */
     .search {
         flex-direction: column;
         gap: 6px;
         width: 90%;
         margin: 0 auto 12px auto;
+        align-items: center;
     }
     .search input, .search button {
         width: 100%;
@@ -469,4 +409,167 @@ body {
     .container {
         margin-top: 10px;
     }
+
+    /* 上方操作按鈕 */
+    .actions {
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* 書封面縮小 */
+    .book img {
+        height: 160px;
+    }
 }
+/* ========== 📘 書籍詳細彈窗 (Modal) ========== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    animation: fadeIn 0.25s ease;
+    text-align: center;
+}
+
+.modal-img {
+    width: 160px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.modal-close {
+    float: right;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.modal-desc {
+    margin-top: 10px;
+    color: #555;
+}
+
+.modal-add-btn {
+    margin-top: 16px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    transition: 0.25s;
+}
+.modal-add-btn:hover {
+    background: var(--accent-dark);
+    transform: scale(1.03);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ===========================
+   📘 書籍彈窗 Modal
+   =========================== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 420px;
+    padding: 20px;
+    border-radius: 12px;
+    position: relative;
+    animation: fadeIn 0.25s ease;
+    text-align: center;
+}
+
+/* ❌ 關閉按鈕 */
+.close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* 📷 圖片容器 */
+.modal-img-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+/* 左右切換按鈕 */
+.nav-btn {
+    background: #f2f2f2;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 18px;
+}
+.nav-btn:hover {
+    background: #e0e0e0;
+}
+
+/* 主圖片 */
+#modalImg {
+    width: 240px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* 文字排版 */
+.price {
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.desc {
+    margin-top: 12px;
+    color: #444;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.modal-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2em;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 0 10px;
+    z-index: 10;
+}
+.modal-arrow.left { left: 10px; }
+.modal-arrow.right { right: 10px; }
