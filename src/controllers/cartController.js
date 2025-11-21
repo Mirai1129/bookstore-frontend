@@ -61,7 +61,33 @@ const getCart = async (req, res) => {
     }
 };
 
+const removeItem = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { bookId } = req.params;
+
+        if (!userId) {
+            return res.status(401).json({ detail: 'User not authenticated' });
+        }
+
+        const response = await apiClient.delete(`/carts/items/${bookId}`, {
+            headers: { 'X-User-ID': userId }
+        });
+
+        res.status(200).json(response.data);
+
+    } catch (error) {
+        console.error('BFF Error: Remove item failed:', error.message);
+        if (error.response) {
+            res.status(error.response.status).json(error.response.data);
+        } else {
+            res.status(500).json({ detail: 'BFF Error: Remove failed' });
+        }
+    }
+};
+
 module.exports = {
     addToCart,
-    getCart
+    getCart,
+    removeItem
 };

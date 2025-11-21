@@ -201,6 +201,7 @@ body::before {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     display: flex;
     flex-direction: column;
+    cursor: pointer; /* 讓卡片滑鼠變小手 */
 }
 .book:hover {
     transform: translateY(-6px);
@@ -235,6 +236,13 @@ body::before {
 .btn-add:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+/* 停用按鈕樣式 */
+.btn-add.disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }
 
 /* 我的書籍上方操作按鈕 */
@@ -294,7 +302,7 @@ body::before {
     font-size: 0.95rem;
 }
 
-/* 電腦板響應式（保留） */
+/* 電腦板響應式 */
 @media (max-width: 768px) {
     .nav-container {
         flex-direction: column;
@@ -313,11 +321,11 @@ body::before {
     /* 導覽列整體 */
     .nav {
         flex-direction: row;
-        justify-content: flex-start;  /* 從左排列 */
+        justify-content: flex-start;
         align-items: center;
-        padding: 6px 0px;  /* 左右縮小 padding，防止偏右 */
+        padding: 6px 0px;
         height: auto;
-        gap: 4px;  /* 品牌 + 使用者 + 連結間距 */
+        gap: 4px;
     }
 
     /* 品牌 LOGO + 名稱 */
@@ -326,7 +334,7 @@ body::before {
         display: flex;
         align-items: center;
         white-space: nowrap;
-        margin: 0;  /* 不留右邊距 */
+        margin: 0;
     }
     .brand-logo {
         width: 35px;
@@ -344,7 +352,7 @@ body::before {
         display: flex;
         align-items: center;
         gap: 6px;
-        flex: 0 0 auto;  /* 不撐滿 */
+        flex: 0 0 auto;
     }
     .nav-links a {
         font-size: 0.85rem;
@@ -356,8 +364,8 @@ body::before {
         display: flex;
         align-items: center;
         gap: 3px;
-        flex: 0 0 auto;  /* 不撐滿、不換行 */
-        margin-left: 0;  /* 緊貼品牌 */
+        flex: 0 0 auto;
+        margin-left: 0;
         margin-right: 0;
     }
     .nav-user {
@@ -378,18 +386,13 @@ body::before {
     .nav button {
         font-size: 0.8rem;
         padding: 6px 7px;
-        flex-shrink: 0;  /* 防止換行 */
+        flex-shrink: 0;
         border-radius: 8px;
         background: var(--accent);
         color: #fff;
         border: 0;
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    }
-    .nav button:hover {
-        background: var(--accent-dark);
-        transform: scale(1.05);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
 
     /* 搜尋區按鈕與輸入欄置中且同寬 */
@@ -405,84 +408,20 @@ body::before {
         font-size: 0.85rem;
     }
 
-    /* 主容器距離 header */
     .container {
         margin-top: 10px;
     }
-
-    /* 上方操作按鈕 */
     .actions {
         margin-top: 10px;
         flex-wrap: wrap;
     }
-
-    /* 書封面縮小 */
     .book img {
         height: 160px;
     }
 }
-/* ========== 📘 書籍詳細彈窗 (Modal) ========== */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    width: 90%;
-    max-width: 420px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    animation: fadeIn 0.25s ease;
-    text-align: center;
-}
-
-.modal-img {
-    width: 160px;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 12px;
-}
-
-.modal-close {
-    float: right;
-    font-size: 26px;
-    cursor: pointer;
-}
-
-.modal-desc {
-    margin-top: 10px;
-    color: #555;
-}
-
-.modal-add-btn {
-    margin-top: 16px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 10px;
-    background: var(--accent);
-    color: white;
-    cursor: pointer;
-    transition: 0.25s;
-}
-.modal-add-btn:hover {
-    background: var(--accent-dark);
-    transform: scale(1.03);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
 
 /* ===========================
-   📘 書籍彈窗 Modal
+   📘 書籍彈窗 Modal (已優化圖片顯示)
    =========================== */
 .modal {
     display: none;
@@ -491,85 +430,181 @@ body::before {
     background: rgba(0,0,0,0.6);
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 2000;
 }
 
+/* 彈窗內容容器 */
 .modal-content {
     background: #fff;
     width: 90%;
-    max-width: 420px;
+    max-width: 450px; /* 稍微加寬一點點 */
     padding: 20px;
     border-radius: 12px;
     position: relative;
-    animation: fadeIn 0.25s ease;
     text-align: center;
+
+    /* 🔴 關鍵：限制高度並允許捲動 */
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    animation: fadeIn 0.25s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
 
 /* ❌ 關閉按鈕 */
-.close {
+.close, .modal-close {
     position: absolute;
     top: 12px;
     right: 16px;
     font-size: 26px;
     cursor: pointer;
+    z-index: 10; /* 確保在最上層 */
+    color: #666;
 }
 
-/* 📷 圖片容器 */
-.modal-img-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 12px;
+/* 📷 圖片容器與主圖 */
+.modal-img-container {
+    text-align: center;
+    margin-bottom: 10px;
 }
 
-/* 左右切換按鈕 */
-.nav-btn {
-    background: #f2f2f2;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 18px;
-}
-.nav-btn:hover {
-    background: #e0e0e0;
-}
-
-/* 主圖片 */
 #modalImg {
-    width: 240px;
-    height: 320px;
-    object-fit: cover;
+    width: 100%;
+    height: auto;
+
+    /* 🔴 關鍵：限制圖片最大高度，避免撐爆 */
+    max-height: 35vh;
+    object-fit: contain;
+
     border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* 🖼️ 縮圖區塊 */
+.modal-thumbnails {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.thumb-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.thumb-img:hover, .thumb-img.active {
+    border-color: var(--accent);
+    opacity: 1;
+    transform: scale(1.05);
 }
 
 /* 文字排版 */
+.modal h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+}
+.modal p {
+    margin: 5px 0;
+    font-size: 0.95rem;
+}
 .price {
     font-weight: bold;
-    margin-top: 8px;
+    color: #e74c3c;
+    font-size: 1.1rem;
 }
-
 .desc {
     margin-top: 12px;
-    color: #444;
+    color: #555;
+    text-align: left;
+    line-height: 1.5;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* 彈窗內的按鈕 */
+#modalAddToCartBtn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
-.modal-arrow {
-    position: absolute;
-    top: 50%;
+
+/* --- 圖片畫廊容器 (包住 大圖 + 左右按鈕) --- */
+.modal-gallery-wrapper {
+    position: relative; /* 讓內部的絕對定位按鈕以此為基準 */
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* --- 大圖樣式 (Main Image) --- */
+#modalImg {
+    width: 100%;
+    height: auto;
+    max-height: 35vh;
+    object-fit: contain;
+    border-radius: 6px;
+    /* 確保圖片不會蓋住按鈕 */
+    z-index: 1;
+}
+
+/* --- 左右切換按鈕樣式 --- */
+.nav-btn {
+    position: absolute; /* 絕對定位：浮在圖片上或旁邊 */
+    top: 50%;           /* 垂直置中 */
     transform: translateY(-50%);
-    font-size: 2em;
-    background: rgba(0,0,0,0.3);
-    color: white;
-    border: none;
+
+    background-color: rgba(255, 255, 255, 0.8); /* 半透明白底 */
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+
+    font-size: 18px;
+    color: #333;
     cursor: pointer;
-    padding: 0 10px;
-    z-index: 10;
+    z-index: 10; /* 確保按鈕在最上層，按得到 */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.modal-arrow.left { left: 10px; }
-.modal-arrow.right { right: 10px; }
+
+/* 滑鼠移上去的效果 */
+.nav-btn:hover {
+    background-color: #fff;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 左邊按鈕位置 */
+.nav-btn.prev {
+    left: 10px; /* 距離左邊 10px */
+}
+
+/* 右邊按鈕位置 */
+.nav-btn.next {
+    right: 10px; /* 距離右邊 10px */
+}

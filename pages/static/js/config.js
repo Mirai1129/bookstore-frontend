@@ -47,7 +47,11 @@ export const API_ENDPOINTS = {
     // Carts
     addToCart: `${API_BASE_URL}/cart/items`,
     myCart: `${API_BASE_URL}/cart`,
+    removeCartItem: (bookId) => `${API_BASE_URL}/cart/items/${bookId}`,
 
     // Upload
-    upload: `${API_BASE_URL}/upload/images`
+    upload: `${API_BASE_URL}/upload/images`,
+
+    // Order
+    checkout: `${API_BASE_URL}/orders`
 };

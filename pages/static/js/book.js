@@ -200,7 +200,10 @@ function bindAllEventListeners() {
                     price: price,
                     seller_id: userId,
                     condition: aiCondition,
-                    image_url: urls.front
+                    image_url: urls.front,
+                    image_front_url: urls.front,
+                    image_spine_url: urls.spine,
+                    image_back_url: urls.back
                 };
 
                 const saveRes = await fetch(API_ENDPOINTS.books, {
