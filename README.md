@@ -9,6 +9,8 @@
     JWT_SECRET=
     PORT=5000 # 或是其他你設定的
     LIFF_ID=
+    LINE_CHANNEL_ACCESS_TOKEN=
+    LINE_CHANNEL_SECRET=
     ```
 
 2. 啟動專案
