@@ -1,4 +1,5 @@
 const apiClient = require('../services/coreApiClient');
+const lineBotService = require('../services/lineBotService');
 
 const createOrder = async (req, res) => {
     try {
@@ -23,7 +24,11 @@ const createOrder = async (req, res) => {
             headers: {'X-User-ID': userId}
         });
 
-        res.status(201).json(response.data);
+        const createdOrder = response.data;
+
+        await lineBotService.sendOrderConfirmation(userId, createdOrder);
+
+        res.status(201).json(createdOrder);
 
     } catch (error) {
         console.error('BFF Error: Create Order failed:', error.message);
